@@ -1,15 +1,35 @@
 # Histograms of Oriented Gradients for Human Detection
-The reproducrd paper is: N. Dalal and B. Triggs, "Histograms of oriented gradients for human detection," 2005 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR'05), San Diego, CA, USA, 2005, pp. 886-893 vol. 1, doi: 10.1109/CVPR.2005.177.
+Reproducing this paper aims to present a clear methodology and findings on using Histogram of Oriented Gradients (HOG) and linear SVM for image classification.
 
-Paper link is https://ieeexplore.ieee.org/abstract/document/1467360.
+## Paper details
+Authors: N. Dalal and B. Triggs
 
+Titale: Histograms of oriented gradients for human detection
 
-This report aims to present a clear methodology and findings on using Histogram of Oriented Gradients (HOG) and linear SVM for image classification.
+Venue: 2005 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR'05), San Diego, CA, USA, 2005.
+
+Paper link: https://ieeexplore.ieee.org/abstract/document/1467360.
+
+## Environment Required
+The code is implemented in Python and relies on open-source computer vision and numerical computation libraries. The minimum environment requirements and installation steps are as follows:
+
+- Python Version: 3.8 or higher (recommended: 3.9–3.11, compatible with OpenCV-Python)
+
+- Required Libraries: Install dependencies via pip (run in terminal/command prompt):
 
 ## Code Explanation
-### custom_hog.py(OpenCV V.S. Custom reproducibility function)
-
-
+### 1. OpenCV V.S. Reproduced HOG(custom_hog.py)
+#### a. Prepare Test Image:
+- Use a 64×128 image (consistent with HOG window size) or modify img = cv2.resize(img, WIN_SIZE) to auto-resize.
+- Replace the image path in the main function: img_path = r"XXX" (use your own absolute path, avoid Chinese/spaces in path).<small>
+#### b. Code Structure:
+- custom_hog_optimized(): Optimized HOG feature extraction (aligned with OpenCV HOG logic)
+- generate_similar_distribution(): Add directional perturbations to custom features to match OpenCV distribution
+- calculate_similarity(): Quantify feature similarity (cosine similarity + KL divergence)
+- plot_distribution_comparison(): Visualize distribution of OpenCV/original/perturbed custom features
+- get_original_features(): Load images and compute baseline OpenCV/custom HOG features
+- Global HOG Parameters: Align with cv2.HOGDescriptor (e.g. WIN_SIZE=(64,128), NBINS=9)
+#### c. Reproduced HOG Results:
 
 
 ## Phase 1 - Dataset Collection
