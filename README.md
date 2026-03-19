@@ -5,6 +5,13 @@ Paper link is https://ieeexplore.ieee.org/abstract/document/1467360.
 
 
 This report aims to present a clear methodology and findings on using Histogram of Oriented Gradients (HOG) and linear SVM for image classification.
+
+## Code Explanation
+### custom_hog.py(OpenCV V.S. Custom reproducibility function)
+
+
+
+
 ## Phase 1 - Dataset Collection
 
 ### 1.1 Human Data
