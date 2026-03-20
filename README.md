@@ -29,7 +29,13 @@ The code is implemented in Python and relies on open-source computer vision and 
 - plot_distribution_comparison(): Visualize distribution of OpenCV/original/perturbed custom features
 - get_original_features(): Load images and compute baseline OpenCV/custom HOG features
 - Global HOG Parameters: Align with cv2.HOGDescriptor (e.g. WIN_SIZE=(64,128), NBINS=9)
-#### c. Reproduced HOG Results:
+#### c. HOG Feature Alignment Results:
+- Original vs. Optimized Similarity:
+The cosine similarity between unoptimized custom features and OpenCV features was only 0.558898. After optimizing Gaussian smoothing (window-level convolution), gradient interpolation (bilinear), and L2-Hys normalization (epsilon=1e-5), the cosine similarity increased to 0.90+
+- Key Intermediate Results:
+Gradient magnitude MSE < 5, gradient direction MSE < 2. Cell histogram cosine similarity > 0.95, matching local gradient direction statistics. Reproduced HOG performs well.
+
+- Distribution Alignment & Visual Validation:
 
 
 ## Phase 1 - Dataset Collection
