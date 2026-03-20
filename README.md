@@ -68,79 +68,17 @@ The above pre-processing approach by extracting non-human regions nearby to huma
 
 All non-human images are in **JPG** format and resized to **64×128** pixels.
 
-### 1.3 Testing/Validation Data
-Two balanced testing datasets were created, each containing:
+### 1.3 Cleaned INRIA Dataset
+The organised INRIA dataset, directory structure and description:  
+​
+- train pos:   
+96×160 size. For training positive samples, a 64×128 section from the centre needs to be cropped. The images have already been flipped, meaning they are symmetrical left-to-right.
 
-- 200 positive samples (human)
-- 200 negative samples (non-human)
+- train neg:   
+vary in size, typically measuring several hundred by several hundred pixels; to train the negative samples, 10 regions are randomly cropped from each image to serve as training negative samples.  ​
+​
+Train using the images in the `normalized_images' directory, or use the images in the 'original_images' directory along with the 'annotations' to extract pedestrian regions for training; testing is performed on the 'original_images/test/pos' directory.
 
-
-These two versions are:
-
-**Perfect Dataset:**
-
-- All human images are clean and directly sourced from the PETA dataset.
-- All non-human images are hand selected from processed INRIA dataset to ensure they contain non recognisable humans within the image.
-- Examples of perfect images:
-
-<div align="center">
-
-| ![Perfect Human Example 1](../example_images/perfect_human_1.png) ![Perfect Human Example 2](../example_images/perfect_human_2.jpg) | ![Perfect Non-Human Example 1](../example_images/perfect_non_human_1.jpg) ![Perfect Non-Human Example 2](../example_images/perfect_non_human_2.jpg) |
-|:---:|:---:|
-| *Figure 1: Examples of perfect human images* | *Figure 2: Examples of perfect non-human images* |
-
-</div>
-
-
-**Imperfect Dataset:**
-
-- 25% of human images were carefully selected from our processed INRIA dataset, they were initially misclassified as non-human but contain clearly visible human subjects. Unlike the pristine PETA examples, these images may have varying zoom levels or contain multiple humans, making them more challenging to classify.
-- 25% of non-human images are randomly sampled from external landscape images that contain no humans. These images are cropped into 64x128 pixel patches, introducing more diverse visual elements and textures compared to the INRIA dataset.
-- Examples of imperfect images:
-
-<div align="center">
-
-| ![Imperfect Human Example 1](../example_images/unperfect_human_1.jpg) ![Imperfect Human Example 2](../example_images/unperfect_human_2.jpg) | ![Imperfect Non-Human Example 1](../example_images/unperfect_non_human_1.jpg) ![Imperfect Non-Human Example 2](../example_images/unperfect_non_human_2.jpg) |
-|:---:|:---:|
-| *Figure 3: Examples of imperfect human images* | *Figure 4: Examples of imperfect non-human images* |
-
-</div>
-
-#### Why Two Test Sets?
-To enable a meaningful ablation study, we created both a 'perfect' and an 'imperfect' test set. Our default-parameter model achieved 99.5% accuracy on the perfect dataset, meaning nearly all models in ablation would score near 100%, making it impossible to distinguish between them. The imperfect set was designed to be more challenging, ensuring enough variation in results to effectively compare and select the best model parameters
-
-
-\newpage
-
-### *1.4 Further study* (Impact of imperfect training data and dataset size)
-
-Since the initial training dataset only contained perfect human images, we conducted additional experiments to evaluate how both imperfect training data and dataset size affect model performance.
-
-In this extended study:
-
-- We gradually introduced imperfect human images into the training dataset.
-- These imperfect images were extracted from the annotated human regions of the INRIA dataset, representing noise or ambiguous cases.
-- We also experimented with different training set sizes, ranging from 250 to 1000 samples per class.
-- All models were trained using the same HOG feature parameters and SVM settings to ensure comparability.
-
-<div align="center">
-
-| ![ROC curves on perfect test set](../notebooks/outputs/roc_comparison_perfect_200.png) | ![ROC curves on imperfect test set](../notebooks/outputs/roc_comparison_unperfect_200.png) |
-|:---:|:---:|
-| *Figure 5: ROC curves comparing different training configurations on the perfect test set* | *Figure 6: ROC curves comparing different training configurations on the imperfect test set* |
-
-</div>
-
-By using ROC curve and AUC as a performance measure, we found that:
-
-- Models trained on **clean (perfect) human data** performed relatively well on both perfect and imperfect test sets. This may imply that clean training data, while not representing true population diversity, significantly improves a model's ability to distinguish between human and non-human subjects.
-- The model trained with **50% imperfect human data** showed the **worst performance** across both test sets, suggesting that excessive noise in training data degrades the model's ability to generalise.
-- **Increasing the training set size** beyond 250 samples per class led to **decreased performance** on both test sets. This suggests that larger datasets may cause the model to overfit or learn noise patterns, rather than generalisable features for human detection.
-
-
-Based on these findings, we selected a training set containing 250 perfect human images and 250 non-human images, as this smaller dataset size appears to prevent overfitting while maintaining strong classification performance.
-
-\newpage
 
 ## Phase 2 - Feature Extraction & Model Training
 
