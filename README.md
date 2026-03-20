@@ -270,6 +270,5 @@ We compare the overall performance of our final HOG detectors with that of some 
 
   In the original paper, the curves in the low FPPW range are flatter, and the increase in false negative rate is smaller; in the reproduction figures, the false negative rate for all curves in this range is 3–5 percentage points higher than in the original paper. For example, at 10⁻⁵ FPPW, the false negative rate for Ker. R-HOG is approximately 15%, whereas in the original paper it is approximately 10%.
 
-## Phase 5 - Further study (Impact of imperfect training data and dataset size)
 
 
