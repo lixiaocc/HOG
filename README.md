@@ -203,11 +203,43 @@ We combined the various parameters used to generate the figures in the paper—s
 
 Please place HOG_param_test.ipynb in the same directory as hard_example, and execute the code in HOG_param_test.ipynb in sequence (this may take a considerable amount of time; testing a single set of parameters takes around half an hour). Below are the plots showing the distribution of the miss rate across different FPPW values following a successful run:
 
-### 3.1 Effect of number of orientation bins:
+### 3.1 Effect of gamma correction:
+
+<div align="center">
+
+<img src="./test_result_image/4.png" width="100%" />
+
+</div>
+
+### 3.2 Effect of gradient scale:
+
+<div align="center">
+
+<img src="./test_result_image/5.png" width="100%" />
+
+</div>
+
+### 3.3 Effect of number of orientation bins:
 
 <div align="center">
 
 <img src="./test_result_image/1.png" width="100%" />
+
+</div>
+
+### 3.4 Effect of normalization methods:
+
+<div align="center">
+
+<img src="./test_result_image/2.png" width="100%" />
+
+</div>
+
+### 3.5 Effect of different window size:
+
+<div align="center">
+
+<img src="./test_result_image/3.png" width="100%" />
 
 </div>
 
