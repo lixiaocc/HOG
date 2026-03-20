@@ -31,13 +31,19 @@ The code is implemented in Python and relies on open-source computer vision and 
 - Global HOG Parameters: Align with cv2.HOGDescriptor
 #### c. HOG Feature Alignment Results:
 - Original vs. Optimized Similarity: Cell(5,5) for example
-The cosine similarity between unoptimized custom features and OpenCV features was 0.992778, after optimizing Gaussian smoothing, gradient interpolation, and L2-Hys normalization.Comparison of Cell histogram distributions:
+
+  The cosine similarity between unoptimized custom features and OpenCV features was 0.992778, after optimizing Gaussian smoothing, gradient interpolation, and L2-Hys normalization.Comparison of Cell histogram distributions:
 ![Gradient magnitude/direction contrast](./README_image/image(1).png)
+
 - Key Intermediate Results:
-Gradient magnitude MSE=0.505894 < 5, gradient direction MSE=0.637341 < 2. Cell histogram cosine similarity=0.972784 > 0.95, matching local gradient direction statistics. Interpolation accuracy is essentially the same, so Reproduced HOG performs well.
+
+  Gradient magnitude MSE=0.505894 < 5, gradient direction MSE=0.637341 < 2. Cell histogram cosine similarity=0.972784 > 0.95, matching local gradient direction statistics. Interpolation accuracy is essentially the same, so Reproduced HOG performs well.
 ![Gradient magnitude/direction contrast](./README_image/image.png)
+
 - Distribution Alignment & Visual Validation:
 
+  Although the left and right tails do not overlap, the images largely coincide overall. The HOG feature cosine similarity is 0.850031, the HOG feature MSE is 0.024962, and the core distributions are aligned.
+![Gradient magnitude/direction contrast](./README_image/image(2).png)
 
 ## Phase 1 - Dataset Collection
 
