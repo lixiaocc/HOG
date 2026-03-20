@@ -33,17 +33,32 @@ The code is implemented in Python and relies on open-source computer vision and 
 - Original vs. Optimized Similarity: Cell(5,5) for example
 
   The cosine similarity between unoptimized custom features and OpenCV features was 0.992778, after optimizing Gaussian smoothing, gradient interpolation, and L2-Hys normalization.Comparison of Cell histogram distributions:
-![Gradient magnitude/direction contrast](./README_image/image(1).png)
+  
+<div align="center">
+
+<img src="./README_image/image(1).png" width="50%" />
+
+</div>
 
 - Key Intermediate Results:
 
   Gradient magnitude MSE=0.505894 < 5, gradient direction MSE=0.637341 < 2. Cell histogram cosine similarity=0.972784 > 0.95, matching local gradient direction statistics. Interpolation accuracy is essentially the same, so Reproduced HOG performs well.
-![Gradient magnitude/direction contrast](./README_image/image.png)
+
+<div align="center">
+
+<img src="./README_image/image.png" width="50%" />
+
+</div>
 
 - Distribution Alignment & Visual Validation:
 
   Although the left and right tails do not overlap, the images largely coincide overall. The HOG feature cosine similarity is 0.850031, the HOG feature MSE is 0.024962, and the core distributions are aligned.
-![Gradient magnitude/direction contrast](./README_image/image(2).png)
+
+<div align="center">
+
+<img src="./README_image/image(2).png" width="50%" />
+
+</div>
 
 ## Phase 1 - Dataset Collection
 
@@ -69,15 +84,41 @@ The above pre-processing approach by extracting non-human regions nearby to huma
 All non-human images are in **JPG** format and resized to **64×128** pixels.
 
 ### 1.3 Cleaned INRIA Dataset
-The organised INRIA dataset, directory structure and description:  
-​
-- train pos:   
+The organised INRIA dataset, directory structure and description:  ​
+- **train/pos**:   
 96×160 size. For training positive samples, a 64×128 section from the centre needs to be cropped. The images have already been flipped, meaning they are symmetrical left-to-right.
+- **train/neg**:   
+vary in size, typically measuring several hundred by several hundred pixels; to train the negative samples, 10 regions are randomly cropped from each image to serve as training negative samples.    ​
 
-- train neg:   
-vary in size, typically measuring several hundred by several hundred pixels; to train the negative samples, 10 regions are randomly cropped from each image to serve as training negative samples.  ​
-​
 Train using the images in the `normalized_images' directory, or use the images in the 'original_images' directory along with the 'annotations' to extract pedestrian regions for training; testing is performed on the 'original_images/test/pos' directory.
+
+### 2. Data Sets and Methodology(custom_hog.py)
+
+#### a. Positive Samplese Processing:
+
+We selected 1208 of the images as positive training examples, together with their left-right reflections (2416 images in all). Original paper selected 1239 positive training examples, 2478 images in all. The training data is broadly consistent.
+
+#### b. Negative Samplese Processing:
+
+A fixed set of 12180 patches sampled randomly from 1218 person-free training photos provided the initial negative set. Entirely consistent with the original paper.
+
+#### c. Hard Example Extraction and Retraining:
+
+Train a preliminary linear SVM classifier using the 'initial positive samples + initial negative samples' (the paper defaults to C=0.01); Using the preliminary classifier, traverse all 1208 large training images without pedestrians, and perform a sliding-window search to identify all hard negative examples; add the Hard Negative Examples to the initial negative sample set to form an augmented training set, and retrain the model for just one round to obtain the final model.
+
+#### d. DET curves:
+
+To quantify detector performance we plot Detection Error Tradeoff (DET) curves on a log-log scale, i.e. miss rate (1−Recall) versus FPPW. Lower values are better.
+
+We use miss rate at 10⁻⁴ FPPW as a reference point for results.
+
+When FPPW = 1.00e-04, the false negative rate is 18.85%, which is approximately 8% higher than the 10.4% reported in the original text.
+
+<div align="center">
+
+<img src="./README_image/image(3).png" width="40%" />
+
+</div>
 
 
 ## Phase 2 - Feature Extraction & Model Training
@@ -93,7 +134,7 @@ Instead of using prebuilt functions like `cv2.HOGDescriptor` or `skimage.feature
 ### 2.2 Function Definition
 
 ```python
-compute_hog(image, cell_size=8, block_size=16, num_bins=9, block_stride=1, filter_="default", angle_=180)
+custom_hog(image, cell_size=8, block_size=16, num_bins=9, block_stride=1, filter_="default", angle_=180)
 ```
 
 Parameters:
@@ -111,17 +152,15 @@ Parameters:
 
 <div align="center">
 
-![](https://docs.opencv.org/3.0-beta/_images/math/e13f10ab0aa0e4f47b0c77c23e976e75300a2b86.png){width=30%}
+![](https://docs.opencv.org/3.0-beta/_images/math/e13f10ab0aa0e4f47b0c77c23e976e75300a2b86.png)
 
 </div>
 
 <div align="center">
 
-*Figure 7: Mathematical representation of gradient magnitude and orientation calculation using cartToPolar*
+*Figure: Mathematical representation of gradient magnitude and orientation calculation using cartToPolar*
 
 </div>
-
-\newpage
 
 ### 2.3 HOG Feature Extraction Pipeline
 
@@ -144,7 +183,7 @@ At this stage, each image has been transformed into a numeric feature representa
 
 ### 2.4 SVM and Classification
 
-After labelling the corresponding features with 1 and 0, we use `LinearSVC()` from scikit-learn for model training, with no advanced hyperparameter tuning.
+After labelling the corresponding features with 1 and 0, we use 'LinearSVC()' from scikit-learn for model training, with no advanced hyperparameter tuning.
 
 ### 2.5 Evaluation
 
@@ -155,6 +194,82 @@ We evaluated the model using two complementary methods:
 
 The DET curve plots miss rate (1-TPR) vs False Positives Per Window (FFPW).
 
-This evaluation method was adopted from the original HOG paper, where detection was performed across sliding windows on larger images. But in our case, each window equals the entire image, so FPPW is equivalent to FP.
+This evaluation method was adopted from the original HOG paper, where detection was performed across sliding windows on larger images.  
 
 The DET curve is plotted on a logarithmic scale, allowing better insight into small performance differences.
+
+## Phase 4 - Overall Performance Comparison
+
+Demonstrate the superior performance of HOG features.
+
+We compare the overall performance of our final HOG detectors with that of some other existing methods. Detectors based on rectangular (R-HOG) or circular log-polar (C-HOG) blocks and linear or kernel SVM are compared with our implementations of the Haar wavelet, PCA-SIFT, and shape context approaches.
+
+### 4.1 Approaches Involved:
+
+- R-HOG: 8×8 cells, 2×2 cells = 16×16 blocks, 9 directional bins (0–180°), L2-Hys normalisation, step size 8 pixels.
+
+- Shape Contexts: Logarithmic polar coordinates, 16 angles + 3 radii, 1 direction box, edge threshold 20–50 grey levels.
+
+- PCA-SIFT: 16×16 patches, PCA dimensionality reduction (retaining 80 principal components), same gradient scale and overlap as HOG.
+
+- Generalized Haar Wavelets: 9×9/12×12 kernels, first/second-order gradient, 45° spacing, xy second-order gradient filtering.
+
+### 4.2 Reproduced Results:
+
+- MIT Dataset
+
+  **HOG (R-HOG/C-HOG):** False negative rate close to 0, achieving near-perfect pedestrian segmentation.
+
+  **Haar/PCA-SIFT/Shape Context:** False negative rate significantly higher than HOG, with FPPW increasing only slowly as the false negative rate decreases.
+
+<div align="center">
+
+<img src="./README_image/855b0f8622adafb2a003ec4af4d3992.png" width="50%" />
+
+</div>
+
+- INRIA Dataset
+
+  **HOG:** Reduces FPPW by an order of magnitude compared to Haar features. At 10⁻⁴ FPPW, the false negative rate is approximately 12%-18%.
+
+  **Kernel SVM** outperforms **linear SVM** by 3%, but inference speed is significantly reduced.
+
+  **R2-HOG** (incorporating second-order derivatives) outperforms the base R-HOG by 2%, whilst doubling the feature dimension.
+
+<div align="center">
+
+<img src="./README_image/0d4223f90d9917cc0bdb8b4a4373709.png" width="50%" />
+
+</div>
+
+### 4.3 Original Paper Comparison:
+
+#### MIT Dataset
+
+- The MIT baseline implementation differs from that in the original paper:
+
+  MIT baseline and MIT best (part) in the original paper were the authors' native implementations, whereas the reproduction may have incorporated optimisations into the baseline, such as contrast normalisation and multi-scale features, resulting in the baseline's performance failing to replicate the overwhelming advantage of HOG as described in the original paper.
+
+- The performance gap between HOG and EC-HOG is too small:
+​
+  The reproduction figure shows that the performance curves for Lin. EC-HOG, Lin. R-HOG and C-HOG are virtually identical, with a negligible difference in performance. In the original paper, EC-HOG (binary edge voting) performed significantly worse than gradient-weighted HOG, and there was also a clear separation in the performance curves on the MIT dataset.
+
+- HOG fails to achieve near-perfect separation of positive and negative samples:
+
+  As shown in the reproduction figure, the false negative rates for Lin. R-HOG and Lin. C-HOG remain above 1% across the entire FPPW range, and the curves do not lie flat against the baseline. In the original paper, HOG-based methods achieved a false negative rate of nearly 0 (<1%) at 10⁻⁴ FPPW, with the curve lying almost flat against the baseline across the entire range, thereby achieving near-perfect classification.
+
+#### INRIA Dataset
+
+- FPPW is converging too rapidly in the high range (10⁻²-10⁻¹):
+
+  The Shape Context series, which performed worst in the original paper, still had a false negative rate of around 10% at 10⁻¹ FPPW and converged more slowly. In the reproduction figure, all curves converge rapidly to a false negative rate of around 1% at 10⁻¹ FPPW.
+
+  A high FPPW corresponds to a low confidence threshold, and performance is influenced by the partitioning of the test set. In our reproduction, the difficulty of positive samples in the INRIA test set was lower than in the original paper, or the sample size was smaller, leading to greater statistical fluctuation and a faster decline in the false negative rate.
+
+- Performance in the low FPPW range (10⁻⁶–10⁻⁵):
+
+  In the original paper, the curves in the low FPPW range are flatter, and the increase in false negative rate is smaller; in the reproduction figures, the false negative rate for all curves in this range is 3–5 percentage points higher than in the original paper. For example, at 10⁻⁵ FPPW, the false negative rate for Ker. R-HOG is approximately 15%, whereas in the original paper it is approximately 10%.
+
+## Phase 5 - Further study (Impact of imperfect training data and dataset size)
+
+
