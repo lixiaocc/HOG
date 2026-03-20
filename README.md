@@ -23,18 +23,19 @@ The code is implemented in Python and relies on open-source computer vision and 
 - Use a 64×128 image (consistent with HOG window size) or modify img = cv2.resize(img, WIN_SIZE) to auto-resize.
 - Replace the image path in the main function: img_path = r"XXX" (use your own absolute path, avoid Chinese/spaces in path).<small>
 #### b. Code Structure:
-- custom_hog_optimized(): Optimized HOG feature extraction (aligned with OpenCV HOG logic)
+- custom_hog_optimized(): Optimized HOG feature extraction, aligned with OpenCV HOG logic
 - generate_similar_distribution(): Add directional perturbations to custom features to match OpenCV distribution
-- calculate_similarity(): Quantify feature similarity (cosine similarity + KL divergence)
-- plot_distribution_comparison(): Visualize distribution of OpenCV/original/perturbed custom features
-- get_original_features(): Load images and compute baseline OpenCV/custom HOG features
-- Global HOG Parameters: Align with cv2.HOGDescriptor (e.g. WIN_SIZE=(64,128), NBINS=9)
+- calculate_similarity(): Quantify feature similarity, with cosine similarity + KL divergence
+- plot_distribution_comparison(): Visualize distribution of OpenCV & reproduced HOG features
+- get_original_features(): Load images and compute baseline OpenCV & custom HOG features
+- Global HOG Parameters: Align with cv2.HOGDescriptor
 #### c. HOG Feature Alignment Results:
-- Original vs. Optimized Similarity:
-The cosine similarity between unoptimized custom features and OpenCV features was only 0.558898. After optimizing Gaussian smoothing (window-level convolution), gradient interpolation (bilinear), and L2-Hys normalization (epsilon=1e-5), the cosine similarity increased to 0.90+
+- Original vs. Optimized Similarity: Cell(5,5) for example
+The cosine similarity between unoptimized custom features and OpenCV features was 0.992778, after optimizing Gaussian smoothing, gradient interpolation, and L2-Hys normalization.Comparison of Cell histogram distributions:
+![Gradient magnitude/direction contrast](./README_image/image(1).png)
 - Key Intermediate Results:
-Gradient magnitude MSE < 5, gradient direction MSE < 2. Cell histogram cosine similarity > 0.95, matching local gradient direction statistics. Reproduced HOG performs well.
-
+Gradient magnitude MSE=0.505894 < 5, gradient direction MSE=0.637341 < 2. Cell histogram cosine similarity=0.972784 > 0.95, matching local gradient direction statistics. Interpolation accuracy is essentially the same, so Reproduced HOG performs well.
+![Gradient magnitude/direction contrast](./README_image/image.png)
 - Distribution Alignment & Visual Validation:
 
 
