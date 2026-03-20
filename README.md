@@ -198,6 +198,19 @@ This evaluation method was adopted from the original HOG paper, where detection 
 
 The DET curve is plotted on a logarithmic scale, allowing better insight into small performance differences.
 
+## Phase 3 - Testing the performance of different parameter combinations
+We combined the various parameters used to generate the figures in the paper—specifically gradient scale, orientation bins, normalisation methods, overlap and stride, window size, and kernel size—to test the impact of different parameter settings on performance.
+
+Please place HOG_param_test.ipynb in the same directory as hard_example, and execute the code in HOG_param_test.ipynb in sequence (this may take a considerable amount of time; testing a single set of parameters takes around half an hour). Below are the plots showing the distribution of the miss rate across different FPPW values following a successful run:
+
+### 3.1 Effect of number of orientation bins:
+
+<div align="center">
+
+<img src="./test_result_image/1.png" width="100%" />
+
+</div>
+
 ## Phase 4 - Overall Performance Comparison
 
 Demonstrate the superior performance of HOG features.
