@@ -346,9 +346,75 @@ In this extended study:
 
 - All models were trained using the same HOG feature parameters and SVM settings to ensure comparability.
 
+<div align="center">
 
+<img src="./README_image/image(4).png" width="50%" />
 
+</div>
 
+Figure : ROC curves comparing different training configurations on the perfect test set
 
+<div align="center">
 
+<img src="./README_image/image(5).png" width="50%" />
+
+</div>
+
+Figure： ROC curves comparing different training configurations on the imperfect test set
+
+By using ROC curve and AUC as a performance measure, we found that:
+
+- Models trained on clean (perfect) human data performed relatively well on both perfect and imperfect test sets. This may imply that clean training data, while not representing true population diversity, significantly improves a model's ability to distinguish between human and non-human subjects.
+
+- The model trained with 50% imperfect human data showed the worst performance across both test sets, suggesting that excessive noise in training data degrades the model's ability to generalise.
+
+- Increasing the training set size beyond 250 samples per class led to decreased performance on both test sets. This suggests that larger datasets may cause the model to overfit or learn noise patterns, rather than generalisable features for human detection.
+
+### 3. Ablation Study
+Due to the high performance (AUC close to 1) achieved on the perfect testing dataset, we conducted an ablation study using the imperfect testing dataset to more thoroughly investigate the model's sensitivity under different parameters.
+
+In this ablation study, rather than performing a full grid search across all possible parameter combinations, we strategically focused on two specific sets of parameters. This selective approach allows us to isolate and analyse the impact of individual factors.
+
+For each combination, the HOG features were re-extracted from the training and testing datasets, and the model was retrained from scratch using the same SVM settings.
+
+The resulting performance was tabled using both Accuracy and AUC scores on the imperfect testing dataset.
+
+We mainly focus on the AUC scores. The comparison plots below present how different configurations impact the model's ability to generalise.
+
+#### a. Cell size & Block size
+We examined the following 10 cell size and block size combinations:
+[(2,4), (2,6), (2,8), (2,16), (4,8), (4,16), (4,32), (8,16), (8,32), (16,32)]
+
+The model presents better performance in terms of AUC when using larger block sizes combined with relatively smaller cell sizes. This may be due to:
+
+- The smaller cell size will capture the fine local details around edges and corners.
+
+- The large regions defined by the large block size, providing broader information for the block normalisation, helping the model to be less variant to sharp illumination changes.
+  
+With the block stride set to the default value of 1, using small cell size and large block size would generate more overlapping blocks, creating more features to represent the image. This would increase the computation cost.
+
+We have then fixed the cell and block size to be 4x4 and 32x32, for the following Set 2 ablation study.
+
+#### b. Bin size and Orientation Angle
+We examined the following 9 bin size and orientation angle combinations:
+
+[(3,180), (4,180), (6,180), (8,180), (9,180), (12,180), (6,360), (8,360), (12,360), (18,360)]
+
+With the 9 bins over 180° orientation scale, the model tends to perform the best according to AUC and Accuracy. However, with the low bin size 3-4, the feature may not be able to capture the important orientation details. The 360° signed orientation didn't really help to improve the performance significantly.
+
+The above findings are in line with those of the original HOG paper:
+
+Increasing the number of orientation bins improves performance significantly up to about 9 bins… For humans, the wide range of clothing and background colours presumably makes the signs of contrast uninformative. However, note that including sign information does help substantially in some other object recognition tasks.
+
+#### c. Final HOG Parameters and Model
+It is worth noting that an earlier comparison of different gradient filters was also conducted, although not included in the final report. In that initial study, the simple [-1,0,1] filter without any smoothing yielded the best performance. Dalal and Triggs (2005) offered some explanation, stating that excessive smoothing before gradient computation can damage HOG performance, highlighting the importance of preserving information retrieved from abrupt edges at fine scales.
+
+The following results illustrate the performance of the final model using both the default and optimised HOG parameter settings on the perfect and imperfect test sets.
+
+### Conclusion
+The final model with best HOG parameters found through ablation study, successfully reduced the number of misclassified images from 2 to 1 on the perfect testing data. It also improved the AUC score from 0.92 to 0.93 on the imperfect testing data.
+
+Although the differences may seem minor, they highlighted the importance of carefully choosing HOG descriptor parameters, to ensure the feature extracted effectively capture enough information for high performance classification. Ideally, a comprehensive grid search over all possible parameter combination may produce even better results.
+
+Another key finding from our extra study in Section 1.4, is that introducing excessive noise into the training set can reduce the effectiveness of the HOG descriptor. This decline in performance may be attributed to the scale-variant nature of HOG. When training data includes small or partial human figures, the descriptor may struggle to handle the scale variations.
 
