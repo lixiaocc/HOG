@@ -207,7 +207,7 @@ Please place HOG_param_test.ipynb in the same directory as hard_example, and exe
 
 <div align="center">
 
-<img src="./test_result_image/4.png" width="100%" />
+<img src="./test_result_image/4.png" width="50%" />
 
 </div>
 
@@ -215,7 +215,7 @@ Please place HOG_param_test.ipynb in the same directory as hard_example, and exe
 
 <div align="center">
 
-<img src="./test_result_image/5.png" width="100%" />
+<img src="./test_result_image/5.png" width="50%" />
 
 </div>
 
@@ -223,7 +223,7 @@ Please place HOG_param_test.ipynb in the same directory as hard_example, and exe
 
 <div align="center">
 
-<img src="./test_result_image/1.png" width="100%" />
+<img src="./test_result_image/1.png" width="50%" />
 
 </div>
 
@@ -231,7 +231,7 @@ Please place HOG_param_test.ipynb in the same directory as hard_example, and exe
 
 <div align="center">
 
-<img src="./test_result_image/2.png" width="100%" />
+<img src="./test_result_image/2.png" width="50%" />
 
 </div>
 
@@ -239,7 +239,7 @@ Please place HOG_param_test.ipynb in the same directory as hard_example, and exe
 
 <div align="center">
 
-<img src="./test_result_image/3.png" width="100%" />
+<img src="./test_result_image/3.png" width="50%" />
 
 </div>
 
@@ -314,6 +314,41 @@ We compare the overall performance of our final HOG detectors with that of some 
 - Performance in the low FPPW range (10⁻⁶–10⁻⁵):
 
   In the original paper, the curves in the low FPPW range are flatter, and the increase in false negative rate is smaller; in the reproduction figures, the false negative rate for all curves in this range is 3–5 percentage points higher than in the original paper. For example, at 10⁻⁵ FPPW, the false negative rate for Ker. R-HOG is approximately 15%, whereas in the original paper it is approximately 10%.
+
+
+## Phase 5 - Further Study
+
+### 1. Dataset
+Why Two Test Sets?
+
+To enable a meaningful ablation study, we created both a 'perfect' and an 'imperfect' test set. Our default-parameter model achieved 99.5% accuracy on the perfect dataset, meaning nearly all models in ablation would score near 100%, making it impossible to distinguish between them. The imperfect set was designed to be more challenging, ensuring enough variation in results to effectively compare and select the best model parameters
+
+#### Perfect Dataset:
+- All human images are clean and directly sourced from the PETA dataset.
+
+- All non-human images are hand selected from processed INRIA dataset to ensure they contain non recognisable humans within the image.
+
+#### Imperfect Dataset:
+- 25% of human images were carefully selected from our processed INRIA dataset. They were initially misclassified as non-human but contain clearly visible human subjects. Unlike the pristine PETA examples, these images may have varying zoom levels or contain multiple humans, making them more challenging to classify.
+
+- 25% of non-human images are randomly sampled from external landscape images that contain no humans. These images are cropped into 64x128 pixel patches, introducing more diverse visual elements and textures compared to the INRIA dataset.
+
+### 2. Impact of imperfect training data and dataset size
+Since the initial training dataset only contained perfect human images, we conducted additional experiments to evaluate how both imperfect training data and dataset size affect model performance.
+
+In this extended study:
+
+- We gradually introduced imperfect human images into the training dataset.
+
+- These imperfect images were extracted from the annotated human regions of the INRIA dataset, representing noise or ambiguous cases.
+
+- We also experimented with different training set sizes, ranging from 250 to 1000 samples per class.
+
+- All models were trained using the same HOG feature parameters and SVM settings to ensure comparability.
+
+
+
+
 
 
 
